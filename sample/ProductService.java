@@ -9,10 +9,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
+@Service
 public class ProductService {
 
 	// ProductMapper 객체 주입
-
+	ProductMapper productMapper;
+	public ProductController(ProductMapper productMapper) {
+		this.productMapper = productMapper;
+	}
 	public Map<String, Object> getProductList() {
 
 		// 서비스 메서드 내 초기 값 정의
@@ -26,23 +30,28 @@ public class ProductService {
 			resultMap.put("REPL_MSG", "SUCCESS");
 			resultMap.put("REPL_PAGE_MSG", "정상처리 되었습니다.");
 			
-			 // 기본값 설정 (초기화 구간)
+			// 기본값 설정 (초기화 구간)
 			// 변수는 pageNum, searchProductName, searchProductType을 사용
 			// page 개수는 5개씩
 			// offset 활용
-	        Integer pageNum = 
-			String searchProductName = 
-			String searchProductType = 
-	        int pageSize = 
-	        int offset = 
+	        Integer pageNum = productForm.getPageNum() != null && productForm.getPageNum() > 0 ? productForm.getPageNum():1;
+			String searchProductName = productForm.getSearchProductName() != null ? productForm.getSearchProductName().trim(): "";
+			String searchProductType = productForm.getSearchProductType() != null ? productForm.getSearchProductType().trim(): "";
+	        int pageSize = 5;
+	        int offset = (pageNum - 1) *pageSize  //pageNum : 1 -> (1-1)*5, pageNum : 2 -> (2-1)*5 = 5
 
 	        // 파라미터 맵 구성
 	        Map<String, Object> paramsMap = new HashMap<>();
 	        // 현재 페이지
+	        paramsMap.put("pageNum", pageNum);
 	        // 상품명 검색어
+	        paramsMap.put("searchProductName", searchProductName);
 	        // 상품유형 검색어
-	        // 한 페이지에서 출력할 데이터 수
+	        paramsMap.put("searchProductType", searchProductType);
+	        // 한 페이지에서 출력할 데이터 수 = pageNum
+	        paramsMap.put("pageSize", pageSize);
 	        // 페이지당 보여줄 데이터의 시작 위치
+	        paramsMap.put("offset", offset);
 	        
 			// 목록 Total Count 조회
 			int totalCount = // 작성
@@ -59,15 +68,17 @@ public class ProductService {
 			int firstPageNum = 1; // 항상 1
 			
 			// 전체 페이지 수 계산(lastPageNum)
-			int lastPageNum = // 작성
+			int lastPageNum = (int) MathCeil((double) totalCount / pageSize);
 
 			// 페이지 블록 범위 계산
 			int startBlockPage = 1;
-			int endBlockPage = // 작성
+			int endBlockPage = lastPageNum;
 
 			// 페이지 블록 리스트 설정
 			List<Integer> pageBlockList = new ArrayList<>();
-			// 작성
+			for(int pageBlock=startBlockPage; pageBlock <=endBlockPage; pageBlock++) {
+				pageBlockList.add(pageBlock);// 1,2,3,4가 들어가는것임
+			}
 			
 			// resultMap에 페이징 관련 값 추가
 			Map<String, Object> pagingMap = new HashMap<>();

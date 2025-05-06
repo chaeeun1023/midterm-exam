@@ -12,6 +12,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import lombok.extern.slf4j.Slf4j;
 
+@Controller
+@RequestMapping("/product")
+@Slf4j
 public class ProductController {
 
 	// ProductService 객체 주입
@@ -24,6 +27,7 @@ public class ProductController {
 	}
 	
 	// 상품 상세 조회 
+	// RestFul 요청 : @PathVariable
     public ModelAndView getProduct() {
     	ModelAndView mv = new ModelAndView();
     	
